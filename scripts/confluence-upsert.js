@@ -16,7 +16,7 @@ import {
   confirmUpsert, 
   promptToContinue,
   promptForRetry,
-  promptForFileSelection 
+  promptForFileSelection
 } from './utils/prompt-utils.js';
 
 /**
@@ -57,7 +57,8 @@ async function main() {
 
     // Step 6: Prompt for Confluence authentication
     console.log('\n🔐 Confluence Authentication');
-    const auth = await promptForAuth();
+    console.log(`✅ Using Confluence URL from settings: ${settings.confluence.url}`);
+    const auth = await promptForAuth(settings.confluence.url);
 
     // Step 7: Create Confluence client and test connection
     console.log('\n🔗 Testing Confluence connection...');
@@ -71,16 +72,24 @@ async function main() {
       return;
     }
 
-    // Step 9: Confirm upsert operation
+    // Step 9: Get parent page ID from settings (if available)
+    const parentPageId = settings.confluence.pageId;
+    if (parentPageId) {
+      console.log(`✅ Parent page ID from settings: ${parentPageId}`);
+    } else {
+      console.log('✅ Creating pages at root level (no parent page ID in settings)');
+    }
+
+    // Step 10: Confirm upsert operation
     const confirmed = await confirmUpsert(selectedFolder, spaceKey, selectedFiles.length, folders.length);
     if (!confirmed) {
       console.log('👋 Operation cancelled by user.');
       return;
     }
 
-    // Step 10: Perform upsert operations
+    // Step 11: Perform upsert operations
     console.log('\n🔄 Starting upsert operations...');
-    await upsertFolderToConfluence(confluenceClient, selectedFiles, folders, spaceKey, selectedFolder);
+    await upsertFolderToConfluence(confluenceClient, selectedFiles, folders, spaceKey, selectedFolder, parentPageId, settings);
 
     console.log('\n🎉 Upsert completed successfully!');
 
@@ -108,8 +117,10 @@ async function main() {
  * @param {Array} folders - Array of folder information objects
  * @param {string} spaceKey - Confluence space key
  * @param {string} folderName - Folder name for logging
+ * @param {string|null} parentPageId - Optional parent page ID for root items
+ * @param {Object} settings - Settings object containing pagePrefix
  */
-async function upsertFolderToConfluence(confluenceClient, files, folders, spaceKey, folderName) {
+async function upsertFolderToConfluence(confluenceClient, files, folders, spaceKey, folderName, parentPageId = null, settings = null) {
   const pageMap = new Map(); // Track created pages for parent-child relationships
   
   // Combine folders and files for topological sorting
@@ -126,7 +137,11 @@ async function upsertFolderToConfluence(confluenceClient, files, folders, spaceK
 
   for (const item of sortedItems) {
     try {
-      console.log(`\n📝 Processing: ${item.title} (${item.type})`);
+      // Apply pagePrefix if available in settings
+      const pagePrefix = settings?.confluence?.pagePrefix || '';
+      const prefixedTitle = pagePrefix + item.title;
+      
+      console.log(`\n📝 Processing: ${prefixedTitle} (${item.type})`);
 
       let confluenceContent;
       let pageData;
@@ -135,7 +150,7 @@ async function upsertFolderToConfluence(confluenceClient, files, folders, spaceK
         // Create folder page with minimal content
         confluenceContent = `<p>Folder: ${item.title}</p>`;
         pageData = {
-          title: item.title,
+          title: prefixedTitle,
           space: spaceKey,
           body: confluenceContent
         };
@@ -143,7 +158,7 @@ async function upsertFolderToConfluence(confluenceClient, files, folders, spaceK
         // Convert markdown to Confluence storage format for files
         confluenceContent = convertMarkdownToConfluenceStorage(item.content);
         pageData = {
-          title: item.title,
+          title: prefixedTitle,
           space: spaceKey,
           body: confluenceContent
         };
@@ -151,9 +166,14 @@ async function upsertFolderToConfluence(confluenceClient, files, folders, spaceK
 
       // Handle parent-child relationships
       if (item.parentPath && pageMap.has(item.parentPath)) {
+        // Use internal folder hierarchy parent
         const parentPageId = pageMap.get(item.parentPath);
         pageData.ancestors = [parentPageId];
         console.log(`   📂 Parent: ${item.parentPath}`);
+      } else if (parentPageId && !item.parentPath) {
+        // Use external parent page ID for root items
+        pageData.parentPageId = parentPageId;
+        console.log(`   📂 External parent: ${parentPageId}`);
       }
 
       // Upsert page to Confluence
@@ -163,11 +183,11 @@ async function upsertFolderToConfluence(confluenceClient, files, folders, spaceK
       pageMap.set(item.relativePath, result.id);
       
       successCount++;
-      console.log(`   ✅ Success: ${item.title}`);
+      console.log(`   ✅ Success: ${prefixedTitle}`);
 
     } catch (error) {
       errorCount++;
-      console.error(`   ❌ Failed to upsert "${item.title}":`, error.message);
+      console.error(`   ❌ Failed to upsert "${prefixedTitle}":`, error.message);
       
       // Continue with next item even if one fails
       continue;
