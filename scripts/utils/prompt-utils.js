@@ -29,24 +29,11 @@ export async function promptForSubfolder(subfolders) {
 
 /**
  * Prompt user for Confluence authentication details
+ * @param {string} baseUrl - Confluence base URL from settings
  * @returns {Promise<Object>} Authentication object
  */
-export async function promptForAuth() {
+export async function promptForAuth(baseUrl) {
   const answers = await inquirer.prompt([
-    {
-      type: 'input',
-      name: 'baseUrl',
-      message: 'Confluence base URL (e.g., https://your-domain.atlassian.net):',
-      validate: (input) => {
-        if (!input) {
-          return 'Please enter a Confluence base URL';
-        }
-        if (!input.startsWith('http')) {
-          return 'Please enter a valid URL starting with http:// or https://';
-        }
-        return true;
-      }
-    },
     {
       type: 'input',
       name: 'username',
@@ -73,7 +60,7 @@ export async function promptForAuth() {
   ]);
 
   return {
-    baseUrl: answers.baseUrl,
+    baseUrl: baseUrl,
     username: answers.username,
     password: answers.password
   };

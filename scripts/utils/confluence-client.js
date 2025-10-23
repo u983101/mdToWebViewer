@@ -180,12 +180,18 @@ export class ConfluenceClient {
    * @param {string} pageData.space - Space key
    * @param {string} pageData.body - Page content in storage format
    * @param {Array} pageData.ancestors - Array of ancestor page IDs
+   * @param {string} pageData.parentPageId - Parent page ID (alternative to ancestors)
    * @returns {Promise<ConfluencePage>} Created or updated page object
    */
   async upsertPage(pageData) {
     try {
       // Check if page exists
       const existingPage = await this.getPageByTitle(pageData.space, pageData.title);
+      
+      // Handle parent page ID if provided
+      if (pageData.parentPageId && !pageData.ancestors) {
+        pageData.ancestors = [pageData.parentPageId];
+      }
       
       if (existingPage) {
         // Update existing page
