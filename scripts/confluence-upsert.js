@@ -255,12 +255,12 @@ function topologicalSort(items) {
   // Check for cycles (shouldn't happen in file system structure)
   if (sorted.length !== items.length) {
     console.warn('⚠️  Warning: Possible cycle detected in folder structure');
-    // Fallback to original order
-    return [...items].sort((a, b) => {
-      const aDepth = (a.relativePath.match(/\//g) || []).length;
-      const bDepth = (b.relativePath.match(/\//g) || []).length;
-      return aDepth - bDepth;
-    });
+      // Fallback to original order
+      return [...items].sort((a, b) => {
+        const aDepth = (a.relativePath.split(path.sep) || []).length;
+        const bDepth = (b.relativePath.split(path.sep) || []).length;
+        return aDepth - bDepth;
+      });
   }
 
   return sorted;

@@ -5,6 +5,8 @@ const marked = require('marked');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const APP_NAME = process.env.APP_NAME || '';
+const BASE_PATH = APP_NAME ? `/${APP_NAME}` : '';
 const MD_DIR = path.join(__dirname, 'md');
 
 // Configure marked for markdown parsing
@@ -15,8 +17,8 @@ marked.setOptions({
   }
 });
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from public directory with base path support
+app.use(`${BASE_PATH}/`, express.static(path.join(__dirname, 'public')));
 
 // Function to get hierarchical directory structure for navigation
 function getDirectoryStructure(rootPath, basePath = '') {
@@ -94,14 +96,14 @@ function generateNavigationHTML(directories, currentPath, level = 0) {
 
     // Add root directory
     const isRootActive = currentPath === '' || currentPath === '/';
-    html += `<li><a href="/" class="${isRootActive ? 'active' : ''}">Home</a></li>\n`;
+    html += `<li><a href="${BASE_PATH}/" class="${isRootActive ? 'active' : ''}">Home</a></li>\n`;
   }
   
   // Add all directories recursively
   for (const dir of directories) {
     const isActive = currentPath === dir.path || currentPath.startsWith(dir.path + '/');
     const hasChildren = dir.children && dir.children.length > 0;
-    const href = dir.hasIndex ? `/${dir.path}` : '#';
+    const href = dir.hasIndex ? `${BASE_PATH}/${dir.path}` : '#';
     const className = dir.hasIndex ? (isActive ? 'active' : '') : 'no-index';
     
     html += `<li>\n`;
@@ -122,7 +124,7 @@ function generateNavigationHTML(directories, currentPath, level = 0) {
         html += '<ul class="file-list">\n';
         for (const file of dirFiles) {
           const isFileActive = currentPath === file.path;
-          html += `<li><a href="/${file.path}.md" class="${isFileActive ? 'active' : ''}">${file.name}</a></li>\n`;
+          html += `<li><a href="${BASE_PATH}/${file.path}.md" class="${isFileActive ? 'active' : ''}">${file.name}</a></li>\n`;
         }
         html += '</ul>\n';
       }
@@ -161,6 +163,11 @@ function renderMarkdownFile(filePath) {
 app.get('*', (req, res) => {
   let requestedPath = req.path;
   
+  // Remove base path from requested path if it exists
+  if (BASE_PATH && requestedPath.startsWith(BASE_PATH)) {
+    requestedPath = requestedPath.substring(BASE_PATH.length);
+  }
+  
   // Security: Prevent directory traversal attacks
   if (requestedPath.includes('..')) {
     return res.status(400).send(`
@@ -168,20 +175,20 @@ app.get('*', (req, res) => {
       <html>
       <head>
         <title>400 - Bad Request</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="${BASE_PATH}/styles.css">
       </head>
       <body>
         <div class="container">
           <div class="navigation">
             <h2>Navigation</h2>
             <ul>
-              <li><a href="/">Home</a></li>
+              <li><a href="${BASE_PATH}/">Home</a></li>
             </ul>
           </div>
           <div class="content">
             <h1>400 - Bad Request</h1>
             <p>Invalid path requested. Directory traversal is not allowed.</p>
-            <p><a href="/">Return to Home</a></p>
+            <p><a href="${BASE_PATH}/">Return to Home</a></p>
           </div>
         </div>
       </body>
@@ -218,20 +225,20 @@ app.get('*', (req, res) => {
       <html>
       <head>
         <title>403 - Forbidden</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="${BASE_PATH}/styles.css">
       </head>
       <body>
         <div class="container">
           <div class="navigation">
             <h2>Navigation</h2>
             <ul>
-              <li><a href="/">Home</a></li>
+              <li><a href="${BASE_PATH}/">Home</a></li>
             </ul>
           </div>
           <div class="content">
             <h1>403 - Forbidden</h1>
             <p>Access to the requested resource is not allowed.</p>
-            <p><a href="/">Return to Home</a></p>
+            <p><a href="${BASE_PATH}/">Return to Home</a></p>
           </div>
         </div>
       </body>
@@ -246,20 +253,20 @@ app.get('*', (req, res) => {
       <html>
       <head>
         <title>404 - File Not Found</title>
-        <link rel="stylesheet" href="/styles.css">
+        <link rel="stylesheet" href="${BASE_PATH}/styles.css">
       </head>
       <body>
         <div class="container">
           <div class="navigation">
             <h2>Navigation</h2>
             <ul>
-              <li><a href="/">Home</a></li>
+              <li><a href="${BASE_PATH}/">Home</a></li>
             </ul>
           </div>
           <div class="content">
             <h1>404 - File Not Found</h1>
             <p>The requested file <code>${requestedPath || 'index.md'}</code> was not found.</p>
-            <p><a href="/">Return to Home</a></p>
+            <p><a href="${BASE_PATH}/">Return to Home</a></p>
           </div>
         </div>
       </body>
@@ -297,7 +304,7 @@ app.get('*', (req, res) => {
     <html>
     <head>
       <title>${requestedPath || 'Home'} - Markdown Server</title>
-      <link rel="stylesheet" href="/styles.css">
+      <link rel="stylesheet" href="${BASE_PATH}/styles.css">
     </head>
     <body>
       <div class="container">
@@ -313,6 +320,10 @@ app.get('*', (req, res) => {
 
 // Start the server
 app.listen(PORT, () => {
-  console.log(`Markdown server running on http://localhost:${PORT}`);
+  const baseUrl = `http://localhost:${PORT}${BASE_PATH}`;
+  console.log(`Markdown server running on ${baseUrl}`);
   console.log(`Serving markdown files from: ${MD_DIR}`);
+  if (APP_NAME) {
+    console.log(`Base path configured: ${BASE_PATH}`);
+  }
 });

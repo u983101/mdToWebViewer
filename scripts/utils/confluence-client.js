@@ -1,4 +1,5 @@
 import axios from 'axios';
+import https from 'https';
 
 /**
  * Confluence API client for authentication and CRUD operations
@@ -11,13 +12,14 @@ export class ConfluenceClient {
    * @param {string} auth.username - Confluence username
    * @param {string} auth.password - Confluence password or API token
    * @param {string} auth.baseUrl - Confluence base URL
+   * @param {boolean} auth.ignoreSSL - Whether to ignore SSL certificate errors (default: false)
    */
   constructor(auth) {
     this.baseUrl = auth.baseUrl.replace(/\/$/, '');
     this.auth = auth;
     
     // Create axios instance with basic auth
-    this.api = axios.create({
+    const axiosConfig = {
       baseURL: `${this.baseUrl}/rest/api`,
       auth: {
         username: auth.username,
@@ -26,7 +28,17 @@ export class ConfluenceClient {
       headers: {
         'Content-Type': 'application/json'
       }
-    });
+    };
+
+    // Handle self-signed certificates if ignoreSSL is true
+    if (auth.ignoreSSL) {
+      console.log('⚠️  SSL certificate validation is disabled - using self-signed certificate workaround');
+      axiosConfig.httpsAgent = new https.Agent({
+        rejectUnauthorized: false
+      });
+    }
+
+    this.api = axios.create(axiosConfig);
   }
 
   /**

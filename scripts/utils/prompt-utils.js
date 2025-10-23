@@ -56,13 +56,20 @@ export async function promptForAuth(baseUrl) {
         }
         return true;
       }
+    },
+    {
+      type: 'confirm',
+      name: 'ignoreSSL',
+      message: 'Ignore SSL certificate errors (for self-signed certificates)?',
+      default: false
     }
   ]);
 
   return {
     baseUrl: baseUrl,
     username: answers.username,
-    password: answers.password
+    password: answers.password,
+    ignoreSSL: answers.ignoreSSL
   };
 }
 
