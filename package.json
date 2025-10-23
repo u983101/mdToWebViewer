@@ -4,8 +4,9 @@
   "description": "Express.js server for serving markdown files with navigation sidebar",
   "main": "app.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "node app.js"
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": ""
   },
   "keywords": ["express", "markdown", "server", "github"],
   "author": "",

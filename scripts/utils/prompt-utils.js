@@ -159,12 +159,22 @@ export async function promptForFileSelection(files) {
     throw new Error('No markdown files found in selected folder');
   }
 
+  // Filter out README.md files from the selection
+  const filteredFiles = files.filter(file => {
+    const fileName = file.relativePath.split('/').pop();
+    return fileName !== 'README.md';
+  });
+
+  if (filteredFiles.length === 0) {
+    throw new Error('No markdown files found after filtering README.md files');
+  }
+
   const { selectedFiles } = await inquirer.prompt([
     {
       type: 'checkbox',
       name: 'selectedFiles',
       message: 'Select files to upsert (use space to select, enter to confirm):',
-      choices: files.map(file => ({
+      choices: filteredFiles.map(file => ({
         name: `${file.title} (${file.relativePath})`,
         value: file,
         checked: true

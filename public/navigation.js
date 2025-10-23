@@ -50,4 +50,31 @@ document.addEventListener('DOMContentLoaded', function() {
             currentElement = currentElement.parentElement;
         }
     });
+    
+    // Search functionality
+    const searchInput = document.getElementById('search-input');
+    const searchButton = document.getElementById('search-button');
+    
+    if (searchInput && searchButton) {
+        // Search on button click
+        searchButton.addEventListener('click', function() {
+            performSearch();
+        });
+        
+        // Search on Enter key press
+        searchInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+        
+        function performSearch() {
+            const searchTerm = searchInput.value.trim();
+            if (searchTerm) {
+                // Always use root-relative path for search to avoid 404 errors
+                const searchUrl = `/search?q=${encodeURIComponent(searchTerm)}`;
+                window.location.href = searchUrl;
+            }
+        }
+    }
 });
