@@ -1,0 +1,12 @@
+{
+    "confluence": {
+        "space": "SAM",
+        "pageId": "950318",
+        "url":"http://localhost:8090",
+        "pagePrefix": "SDLC-"
+    },
+    "jira": {
+        "projectKey": "SDLC",
+        "label": "connectoTeam4"
+    }
+}

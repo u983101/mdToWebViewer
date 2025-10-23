@@ -71,8 +71,23 @@ document.addEventListener('DOMContentLoaded', function() {
         function performSearch() {
             const searchTerm = searchInput.value.trim();
             if (searchTerm) {
-                // Always use root-relative path for search to avoid 404 errors
-                const searchUrl = `/search?q=${encodeURIComponent(searchTerm)}`;
+                // Get the base path from the current URL or use empty string
+                const currentPath = window.location.pathname;
+                let basePath = '';
+                
+                // Extract base path by finding the common prefix before the markdown files
+                if (currentPath.includes('/')) {
+                    // Remove any trailing filename and get the directory path
+                    const pathParts = currentPath.split('/');
+                    // The base path should be everything before the markdown file paths
+                    // For example: /app_name/sample-sdlc-project -> /app_name
+                    if (pathParts.length > 2) {
+                        basePath = '/' + pathParts[1];
+                    }
+                }
+                
+                // Use the base path in the search URL
+                const searchUrl = `${basePath}/search?q=${encodeURIComponent(searchTerm)}`;
                 window.location.href = searchUrl;
             }
         }

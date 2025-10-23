@@ -5,7 +5,7 @@ const marked = require('marked');
 
 const app = express();
 const PORT = process.env.APP_PORT || 8082;
-const APP_NAME = process.env.APP_NAME || '';
+const APP_NAME = process.env.APP_NAME || 'appname';
 const BASE_PATH = APP_NAME ? `/${APP_NAME}` : '';
 const MD_DIR = path.join(__dirname, 'md');
 
@@ -362,7 +362,7 @@ app.get(`${BASE_PATH}/search`, (req, res) => {
   // Get directory structure for navigation
   const directories = getDirectoryStructure(MD_DIR);
   
-  // Generate navigation HTML
+  // Generate navigation HTML with base path support
   const navigationHTML = generateNavigationHTML(directories, '');
   
   // Generate search results HTML
