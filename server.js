@@ -165,9 +165,26 @@ function generateNavigationHTML(directories, currentPath, level = 0) {
       html += `<li><a href="${BASE_PATH}/${parentPath}" class="navigate-up">⬆ Navigate Up</a></li>\n`;
     }
     
-    // Add files for current directory
-    const currentDirPath = currentPath === '' ? '' : currentPath;
-    const currentFiles = getCurrentDirectoryFiles(currentDirPath);
+  // Add files for current directory
+  // Determine which directory's files to show:
+  // - If we're viewing a file, show files from its parent directory
+  // - If we're viewing a directory index, show files from that directory
+  let filesDirPath = currentPath;
+  
+  // Check if currentPath represents a directory (has no file extension and is not empty)
+  const isDirectoryPath = currentPath === '' || 
+                         (currentPath.includes('/') && !currentPath.endsWith('.md')) ||
+                         (!currentPath.includes('/') && !currentPath.endsWith('.md'));
+  
+  if (isDirectoryPath) {
+    // We're viewing a directory index - show files from this directory
+    filesDirPath = currentPath;
+  } else {
+    // We're viewing a file - show files from its parent directory
+    filesDirPath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+  }
+  
+  const currentFiles = getCurrentDirectoryFiles(filesDirPath);
     if (currentFiles.length > 0) {
       html += '<li class="file-section">\n';
       html += '<ul class="file-list">\n';
@@ -193,10 +210,19 @@ function generateNavigationHTML(directories, currentPath, level = 0) {
     const className = dir.hasIndex ? (isActive ? 'active' : '') : 'no-index';
     
     // Only show directories that are direct children of current directory
-    const isDirectChild = level === 0 || 
-                         (currentPath === '' && level === 0) ||
-                         (currentPath && dir.path.startsWith(currentPath) && 
-                          dir.path.substring(currentPath.length + 1).split('/').length === 1);
+    let isDirectChild = false;
+    
+    if (level === 0) {
+      // At top level, show all directories
+      isDirectChild = true;
+    } else if (currentPath === '' && level === 0) {
+      // At root level, show all directories
+      isDirectChild = true;
+    } else if (currentPath && dir.path.startsWith(currentPath)) {
+      // Check if this directory is a direct child of current directory
+      const relativePath = dir.path.substring(currentPath.length + 1);
+      isDirectChild = relativePath.split('/').length === 1;
+    }
     
     if (isDirectChild) {
       html += `<li class="nav-item">\n`;
