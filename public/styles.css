@@ -1,0 +1,324 @@
+/* Reset and base styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  background-color: #f8f9fa;
+}
+
+/* Container layout */
+.container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* Navigation sidebar */
+.navigation {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding: 20px;
+  position: fixed;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.navigation h2 {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  color: #ecf0f1;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 10px;
+}
+
+.navigation h3 {
+  margin: 20px 0 10px 0;
+  font-size: 1rem;
+  color: #95a5a6;
+  border-bottom: 1px solid #34495e;
+  padding-bottom: 5px;
+}
+
+.navigation ul {
+  list-style: none;
+}
+
+.navigation li {
+  margin-bottom: 8px;
+}
+
+.navigation a {
+  color: #bdc3c7;
+  text-decoration: none;
+  display: block;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.navigation a:hover {
+  background-color: #34495e;
+  color: #ecf0f1;
+}
+
+.navigation a.active {
+  background-color: #3498db;
+  color: white;
+}
+
+.navigation a.no-index {
+  color: #7f8c8d;
+  cursor: not-allowed;
+}
+
+.navigation a.no-index:hover {
+  background-color: transparent;
+  color: #7f8c8d;
+}
+
+/* Indentation for files within folders */
+.navigation .file-list {
+  margin-left: 15px;
+}
+
+.navigation .file-list li {
+  margin-bottom: 6px;
+}
+
+.navigation .file-list a {
+  padding: 6px 12px 6px 20px;
+  font-size: 0.9rem;
+  border-left: 2px solid #34495e;
+}
+
+.navigation .file-list a:hover {
+  border-left-color: #3498db;
+}
+
+.navigation .file-list a.active {
+  border-left-color: #3498db;
+}
+
+/* Visual hierarchy for subdirectories */
+.navigation .subdirectory {
+  margin-left: 15px;
+}
+
+.navigation .subdirectory li {
+  margin-bottom: 6px;
+}
+
+.navigation .subdirectory a {
+  color: #95a5a6;
+  font-size: 0.9rem;
+  padding: 6px 12px 6px 20px;
+  border-left: 2px solid #34495e;
+}
+
+.navigation .subdirectory a:hover {
+  background-color: #34495e;
+  color: #ecf0f1;
+  border-left-color: #3498db;
+}
+
+.navigation .subdirectory a.active {
+  background-color: #3498db;
+  color: white;
+  border-left-color: #3498db;
+}
+
+/* Second level subdirectories (even lighter) */
+.navigation .subdirectory .subdirectory a {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  padding: 5px 12px 5px 25px;
+  border-left: 1px solid #34495e;
+}
+
+.navigation .subdirectory .subdirectory a:hover {
+  background-color: #34495e;
+  color: #ecf0f1;
+  border-left-color: #3498db;
+}
+
+.navigation .subdirectory .subdirectory a.active {
+  background-color: #3498db;
+  color: white;
+  border-left-color: #3498db;
+}
+
+/* Third level subdirectories (lightest) */
+.navigation .subdirectory .subdirectory .subdirectory a {
+  color: #6c7a7d;
+  font-size: 0.8rem;
+  padding: 4px 12px 4px 30px;
+  border-left: 1px solid #34495e;
+}
+
+.navigation .subdirectory .subdirectory .subdirectory a:hover {
+  background-color: #34495e;
+  color: #ecf0f1;
+  border-left-color: #3498db;
+}
+
+.navigation .subdirectory .subdirectory .subdirectory a.active {
+  background-color: #3498db;
+  color: white;
+  border-left-color: #3498db;
+}
+
+/* Main content area */
+.content {
+  flex: 1;
+  margin-left: 250px;
+  padding: 40px;
+  max-width: 800px;
+  background-color: white;
+  min-height: 100vh;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Markdown content styling */
+.content h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+.content h2 {
+  font-size: 2rem;
+  margin: 2rem 0 1rem 0;
+  color: #2c3e50;
+}
+
+.content h3 {
+  font-size: 1.5rem;
+  margin: 1.5rem 0 0.75rem 0;
+  color: #2c3e50;
+}
+
+.content h4, .content h5, .content h6 {
+  font-size: 1.25rem;
+  margin: 1.25rem 0 0.5rem 0;
+  color: #2c3e50;
+}
+
+.content p {
+  margin-bottom: 1rem;
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.content ul, .content ol {
+  margin-bottom: 1rem;
+  padding-left: 2rem;
+}
+
+.content li {
+  margin-bottom: 0.5rem;
+}
+
+.content blockquote {
+  border-left: 4px solid #3498db;
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  color: #7f8c8d;
+  font-style: italic;
+}
+
+.content code {
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9rem;
+  color: #e74c3c;
+}
+
+.content pre {
+  background-color: #2c3e50;
+  color: #ecf0f1;
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+}
+
+.content pre code {
+  background-color: transparent;
+  color: inherit;
+  padding: 0;
+}
+
+.content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+}
+
+.content th, .content td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.content th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+.content a {
+  color: #3498db;
+  text-decoration: none;
+}
+
+.content a:hover {
+  text-decoration: underline;
+}
+
+.content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+  margin: 1rem 0;
+}
+
+/* Error page styling */
+.content h1:first-child {
+  color: #e74c3c;
+  border-bottom-color: #e74c3c;
+}
+
+.content code {
+  background-color: #f8f9fa;
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .container {
+    flex-direction: column;
+  }
+  
+  .navigation {
+    position: static;
+    width: 100%;
+    height: auto;
+    max-height: 300px;
+  }
+  
+  .content {
+    margin-left: 0;
+    padding: 20px;
+  }
+}

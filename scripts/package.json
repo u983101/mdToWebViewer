@@ -1,0 +1,23 @@
+{
+  "name": "confluence-upsert-script",
+  "version": "1.0.0",
+  "description": "Script to upsert markdown files to Confluence with interactive prompts",
+  "main": "confluence-upsert.js",
+  "type": "module",
+  "scripts": {
+    "start": "node confluence-upsert.js",
+    "upsert": "node confluence-upsert.js"
+  },
+  "keywords": ["confluence", "markdown", "upsert", "documentation", "sync"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "axios": "^1.6.0",
+    "inquirer": "^8.2.6",
+    "marked": "^9.0.0",
+    "fs-extra": "^11.1.1"
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  }
+}

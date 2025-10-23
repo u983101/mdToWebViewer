@@ -1,0 +1,9 @@
+{
+    "confluence": {
+        "space": "SAM"
+    },
+    "jira": {
+        "projectKey": "SDLC",
+        "label": "connectoTeam4"
+    }
+}
