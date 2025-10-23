@@ -82,95 +82,136 @@ body {
   color: #7f8c8d;
 }
 
-/* Indentation for files within folders */
+/* Collapsible folder navigation */
+.navigation .nav-tree {
+  margin: 0;
+  padding: 0;
+}
+
+.navigation .nav-item {
+  margin-bottom: 4px;
+}
+
+.navigation .folder-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 6px 0;
+}
+
+.navigation .folder-toggle {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  font-size: 10px;
+  text-align: center;
+  line-height: 16px;
+  transition: transform 0.2s ease;
+  color: #95a5a6;
+}
+
+.navigation .folder-contents {
+  margin-left: 20px;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+
+.navigation .folder-contents.expanded {
+  max-height: 1000px; /* Large enough to show all content */
+}
+
+.navigation .folder-contents.expanded .folder-toggle {
+  transform: rotate(90deg);
+}
+
+/* File list styling */
+.navigation .file-section {
+  margin-bottom: 8px;
+}
+
 .navigation .file-list {
-  margin-left: 15px;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .navigation .file-list li {
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .navigation .file-list a {
-  padding: 6px 12px 6px 20px;
+  padding: 6px 12px 6px 24px;
   font-size: 0.9rem;
   border-left: 2px solid #34495e;
+  color: #95a5a6;
 }
 
 .navigation .file-list a:hover {
+  background-color: #34495e;
+  color: #ecf0f1;
   border-left-color: #3498db;
 }
 
 .navigation .file-list a.active {
+  background-color: #3498db;
+  color: white;
   border-left-color: #3498db;
 }
 
 /* Visual hierarchy for subdirectories */
-.navigation .subdirectory {
-  margin-left: 15px;
+.navigation .nav-tree .nav-tree {
+  margin-left: 0;
 }
 
-.navigation .subdirectory li {
-  margin-bottom: 6px;
-}
-
-.navigation .subdirectory a {
+.navigation .nav-tree .nav-tree .folder-header a {
   color: #95a5a6;
   font-size: 0.9rem;
   padding: 6px 12px 6px 20px;
-  border-left: 2px solid #34495e;
 }
 
-.navigation .subdirectory a:hover {
+.navigation .nav-tree .nav-tree .folder-header a:hover {
   background-color: #34495e;
   color: #ecf0f1;
-  border-left-color: #3498db;
 }
 
-.navigation .subdirectory a.active {
+.navigation .nav-tree .nav-tree .folder-header a.active {
   background-color: #3498db;
   color: white;
-  border-left-color: #3498db;
 }
 
 /* Second level subdirectories (even lighter) */
-.navigation .subdirectory .subdirectory a {
+.navigation .nav-tree .nav-tree .nav-tree .folder-header a {
   color: #7f8c8d;
   font-size: 0.85rem;
   padding: 5px 12px 5px 25px;
-  border-left: 1px solid #34495e;
 }
 
-.navigation .subdirectory .subdirectory a:hover {
+.navigation .nav-tree .nav-tree .nav-tree .folder-header a:hover {
   background-color: #34495e;
   color: #ecf0f1;
-  border-left-color: #3498db;
 }
 
-.navigation .subdirectory .subdirectory a.active {
+.navigation .nav-tree .nav-tree .nav-tree .folder-header a.active {
   background-color: #3498db;
   color: white;
-  border-left-color: #3498db;
 }
 
 /* Third level subdirectories (lightest) */
-.navigation .subdirectory .subdirectory .subdirectory a {
+.navigation .nav-tree .nav-tree .nav-tree .nav-tree .folder-header a {
   color: #6c7a7d;
   font-size: 0.8rem;
   padding: 4px 12px 4px 30px;
-  border-left: 1px solid #34495e;
 }
 
-.navigation .subdirectory .subdirectory .subdirectory a:hover {
+.navigation .nav-tree .nav-tree .nav-tree .nav-tree .folder-header a:hover {
   background-color: #34495e;
   color: #ecf0f1;
-  border-left-color: #3498db;
 }
 
-.navigation .subdirectory .subdirectory .subdirectory a.active {
+.navigation .nav-tree .nav-tree .nav-tree .nav-tree .folder-header a.active {
   background-color: #3498db;
   color: white;
-  border-left-color: #3498db;
 }
 
 /* Main content area */

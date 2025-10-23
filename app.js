@@ -4,7 +4,7 @@ const path = require('path');
 const marked = require('marked');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.APP_PORT || 8082;
 const APP_NAME = process.env.APP_NAME || '';
 const BASE_PATH = APP_NAME ? `/${APP_NAME}` : '';
 const MD_DIR = path.join(__dirname, 'md');
@@ -85,14 +85,14 @@ function getCurrentDirectoryFiles(currentPath) {
   return files;
 }
 
-// Function to generate hierarchical navigation HTML
+// Function to generate hierarchical navigation HTML with collapsible folders
 function generateNavigationHTML(directories, currentPath, level = 0) {
   let html = '';
   
   if (level === 0) {
     html = '<nav class="navigation">\n';
     html += '<h2>Navigation</h2>\n';
-    html += '<ul>\n';
+    html += '<ul class="nav-tree">\n';
 
     // Add root directory
     const isRootActive = currentPath === '' || currentPath === '/';
@@ -103,38 +103,44 @@ function generateNavigationHTML(directories, currentPath, level = 0) {
   for (const dir of directories) {
     const isActive = currentPath === dir.path || currentPath.startsWith(dir.path + '/');
     const hasChildren = dir.children && dir.children.length > 0;
+    const hasFiles = getCurrentDirectoryFiles(dir.path).length > 0;
+    const hasContent = hasChildren || hasFiles;
     const href = dir.hasIndex ? `${BASE_PATH}/${dir.path}` : '#';
     const className = dir.hasIndex ? (isActive ? 'active' : '') : 'no-index';
     
-    html += `<li>\n`;
-    html += `<a href="${href}" class="${className}">${dir.name}</a>\n`;
+    html += `<li class="nav-item">\n`;
     
-    // If this directory is active, show its files and subdirectories
-    if (isActive) {
-      // Get files for this directory
+    if (hasContent) {
+      html += `<div class="folder-header">\n`;
+      html += `<span class="folder-toggle">▶</span>\n`;
+      html += `<a href="${href}" class="${className}">${dir.name}</a>\n`;
+      html += `</div>\n`;
+      
+      // Always show children and files (collapsed by default, expanded via CSS for active paths)
+      html += `<ul class="folder-contents ${isActive ? 'expanded' : ''}">\n`;
+      
+      // Add files for this directory
       const dirFiles = getCurrentDirectoryFiles(dir.path);
-      
-      // Only show files if this is the exact directory we're in (not parent directories)
-      // Check if currentPath starts with this directory path and doesn't go deeper
-      const isExactDirectory = currentPath === dir.path;
-      const isFileInThisDirectory = currentPath.startsWith(dir.path + '/') && 
-                                   currentPath.split('/').length === dir.path.split('/').length + 1;
-      
-      if ((isExactDirectory || isFileInThisDirectory) && dirFiles.length > 0) {
+      if (dirFiles.length > 0) {
+        html += '<li class="file-section">\n';
         html += '<ul class="file-list">\n';
         for (const file of dirFiles) {
           const isFileActive = currentPath === file.path;
           html += `<li><a href="${BASE_PATH}/${file.path}.md" class="${isFileActive ? 'active' : ''}">${file.name}</a></li>\n`;
         }
         html += '</ul>\n';
+        html += '</li>\n';
       }
       
-      // Then show subdirectories
+      // Add subdirectories
       if (hasChildren) {
-        html += '<ul class="subdirectory">\n';
         html += generateNavigationHTML(dir.children, currentPath, level + 1);
-        html += '</ul>\n';
       }
+      
+      html += '</ul>\n';
+    } else {
+      // Directory with no content (no files or subdirectories)
+      html += `<a href="${href}" class="${className}">${dir.name}</a>\n`;
     }
     
     html += `</li>\n`;
@@ -313,6 +319,7 @@ app.get('*', (req, res) => {
           ${markdownContent}
         </div>
       </div>
+      <script src="${BASE_PATH}/navigation.js"></script>
     </body>
     </html>
   `);
